@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
-
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -25,6 +25,7 @@ public class Account {
     private String username;
 
     @Column(nullable = false)
+    @NotBlank
     private String currency;
 
     @Column(nullable = false)

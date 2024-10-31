@@ -68,6 +68,7 @@ public class TransactionService {
         }
 
         Transaction issuerTransaction = new Transaction(
+                issuerAccount.getId(),
                 issuerAccount.getId(), 
                 false, 
                 true,
@@ -79,6 +80,7 @@ public class TransactionService {
         transactionRepository.save(issuerTransaction);
 
         Transaction recipientTransaction = new Transaction(
+                issuerAccount.getId(),
                 recipientAccount.getId(), 
                 true, 
                 false,
@@ -92,28 +94,54 @@ public class TransactionService {
         return TransferFundsResponseDTO.builder()
                 .transferCreatedAt(issuerTransaction.getTransactionCreatedAt())
                 .recipientUsername(recipientAccount.getUsername())
-                .currency(recipientAccount.getCurrency())
-                .amount(convertedAmount)
+                .currency(issuerAccount.getCurrency())
+                .amount(request.getAmount())
                 .build();
     }
 
     @Transactional(readOnly = true)
     public List<TransactionHistoryResponseDTO> getTransactionHistory(@RequestBody TransactionHistoryRequestDTO request) {
-        List<Transaction> transactions = transactionRepository.findByAccountId(request.getAccountId());
-        Long accountId = request.getAccountId();
-        if (accountRepository.findById(accountId).isEmpty()) {
-            throw new RegisterAccountException("Account not found");
-        }
-        return transactions.stream()
-                .map(transaction -> TransactionHistoryResponseDTO.builder()
+    List<Transaction> transactions = transactionRepository.findByAccountId(request.getAccountId());
+    Long accountId = request.getAccountId();
+    Optional<Account> optionalAccount = accountRepository.findById(accountId);
+
+    if (optionalAccount.isEmpty()) {
+        throw new RegisterAccountException("Account not found");
+    }
+
+    Account account = optionalAccount.get();
+    String accountCurrency = account.getCurrency();
+
+    return transactions.stream()
+            .map((Transaction transaction) -> {
+                BigDecimal transactionBalance = transaction.getBalance();
+                String transactionCurrency = transaction.getCurrency();
+
+                // Retrieve issuer's currency if issuerAccountId is present
+                String issuerCurrency = transactionCurrency;
+                if (transaction.getVendorAccountId() != null) {
+                    Optional<Account> issuerAccountOpt = accountRepository.findById(transaction.getVendorAccountId());
+                    if (issuerAccountOpt.isPresent()) {
+                        issuerCurrency = issuerAccountOpt.get().getCurrency();
+                    }
+                }
+
+                // Convert the balance if issuer's currency differs from the account's currency
+                if (!issuerCurrency.equals(accountCurrency)) {
+                    transactionBalance = currencyService.convertCurrency(transactionBalance, issuerCurrency, accountCurrency);
+                }
+
+                return TransactionHistoryResponseDTO.builder()
                         .recentTransaction(transaction.getAmount())
-                        .currency(transaction.getCurrency())
-                        .accountBalanceAfterTransaction(transaction.getAccountBalanceAfterTransaction())
+                        .currency(accountCurrency)
+                        .balance(transactionBalance)
                         .incoming(transaction.isIncoming())
                         .outgoing(transaction.isOutgoing())
                         .vendorUsername(transaction.getVendorUsername())
                         .timeStamp(transaction.getTransactionCreatedAt())
-                        .build())
-                .collect(Collectors.toList());
+                        .build();
+            })
+            .collect(Collectors.toList());
     }
+
 }

@@ -79,7 +79,7 @@ class TransactionServiceTest {
         assertNotNull(response);
         assertEquals(recipientAccount.getUsername(), response.getRecipientUsername());
         assertEquals(request.getAmount(), response.getAmount());
-        verify(transactionRepository, times(2)).save(any(Transaction.class)); // Two transactions should be saved
+        verify(transactionRepository, times(2)).save(any(Transaction.class));
     }
 
     @Test

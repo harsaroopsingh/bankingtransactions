@@ -1,6 +1,7 @@
 package com.brainridge.bankingapi.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,13 +12,15 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 @Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TransactionHistoryResponseDTO {
+    Long vendorAccountId;
 
     String currency;
     
     BigDecimal recentTransaction;
 
-    BigDecimal accountBalanceAfterTransaction;
+    BigDecimal balance;
 
     boolean incoming;
 

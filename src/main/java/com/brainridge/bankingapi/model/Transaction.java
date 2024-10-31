@@ -21,6 +21,9 @@ public class Transaction {
     private Long id;
 
     @Column(nullable = false)
+    private Long vendorAccountId;
+
+    @Column(nullable = false)
     private Long accountId;
 
     @Column(nullable = false)
@@ -36,7 +39,7 @@ public class Transaction {
     private boolean outgoing;
 
     @Column(nullable = false)
-    private BigDecimal accountBalanceAfterTransaction;
+    private BigDecimal balance;
 
     @Column(nullable = false)
     private String vendorUsername;
@@ -49,19 +52,21 @@ public class Transaction {
         transactionCreatedAt = LocalDateTime.now();
     }
 
-    public Transaction(Long accountId, 
+    public Transaction(Long vendorAccountId,
+                       Long accountId, 
                        boolean incoming, 
                        boolean outgoing, 
                        String currency, 
                        BigDecimal amount, 
-                       BigDecimal accountBalanceAfterTransaction, 
+                       BigDecimal balance, 
                        String vendorUsername) {
+        this.vendorAccountId = vendorAccountId;
         this.accountId = accountId;
         this.currency = currency;
         this.amount = amount;
         this.incoming = incoming;
         this.outgoing = outgoing;
-        this.accountBalanceAfterTransaction = accountBalanceAfterTransaction;
+        this.balance = balance;
         this.vendorUsername = vendorUsername;
     }
 
