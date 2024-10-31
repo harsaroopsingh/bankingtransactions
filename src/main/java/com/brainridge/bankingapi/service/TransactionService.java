@@ -117,7 +117,6 @@ public class TransactionService {
                 BigDecimal transactionBalance = transaction.getBalance();
                 String transactionCurrency = transaction.getCurrency();
 
-                // Retrieve issuer's currency if issuerAccountId is present
                 String issuerCurrency = transactionCurrency;
                 if (transaction.getVendorAccountId() != null) {
                     Optional<Account> issuerAccountOpt = accountRepository.findById(transaction.getVendorAccountId());
@@ -126,7 +125,6 @@ public class TransactionService {
                     }
                 }
 
-                // Convert the balance if issuer's currency differs from the account's currency
                 if (!issuerCurrency.equals(accountCurrency)) {
                     transactionBalance = currencyService.convertCurrency(transactionBalance, issuerCurrency, accountCurrency);
                 }

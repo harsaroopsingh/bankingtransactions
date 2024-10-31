@@ -24,7 +24,6 @@ public class CurrencyService {
 
     @PostConstruct
     public void init() {
-        // Check if currencies already exist to avoid duplicationsss
         if (currencyRepository.count() == 0) {
             currencyRepository.save(new Currency("USD", BigDecimal.valueOf(1.0)));
             currencyRepository.save(new Currency("EUR", BigDecimal.valueOf(0.85)));
