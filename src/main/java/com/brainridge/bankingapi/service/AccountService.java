@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.brainridge.bankingapi.dto.RegisterAccountRequestDTO;
 import com.brainridge.bankingapi.dto.RegisterAccountResponseDTO;
-import com.brainridge.bankingapi.exception.AccountExistsException;
 import com.brainridge.bankingapi.exception.RegisterAccountException;
 import com.brainridge.bankingapi.model.Account;
 import com.brainridge.bankingapi.repository.AccountRepository;
@@ -30,10 +29,10 @@ public class AccountService {
     public RegisterAccountResponseDTO registerAccount(RegisterAccountRequestDTO request) {
 
         if (accountRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new AccountExistsException("Account already exists");
+            throw new RegisterAccountException("Account with that username already exists");
         }
         if (!currencyRepository.findByCode(request.getCurrency()).isPresent()){
-            throw new RegisterAccountException("Invalid currency code");
+            throw new RegisterAccountException("Currency code not supported");
         }
 
         BigDecimal balance = request.getBalance() == null ? BigDecimal.ZERO : request.getBalance();

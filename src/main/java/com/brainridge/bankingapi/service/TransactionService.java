@@ -45,15 +45,15 @@ public class TransactionService {
     public TransferFundsResponseDTO transferFunds(@RequestBody TransferFundsRequestDTO request) {
         Optional<Account> optionalIssuerAccount = accountRepository.findById(request.getIssuerAccountId());
         if (optionalIssuerAccount.isEmpty()) {
-            throw new RegisterAccountException("Issuer not found");
+            throw new RegisterAccountException("Issuer does not have a registered account");
         } else if (optionalIssuerAccount.get().getBalance().subtract(request.getAmount()).compareTo(BigDecimal.ZERO) < 0) {
-            throw new InsufficentBalanceException("Insufficient balance");
+            throw new InsufficentBalanceException("Insufficient balance in the account");
         }
         if(request.getIssuerAccountId().equals(request.getRecipientAccountId())){
             throw new SameAccountException("Issuer and Recipient must be different");
         }
         if (accountRepository.findById(request.getRecipientAccountId()).isEmpty()) {
-           throw new RegisterAccountException("Recipient not found");
+           throw new RegisterAccountException("Recipient does not have a registered account");
         }
         
         BigDecimal amount = request.getAmount();

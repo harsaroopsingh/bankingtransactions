@@ -12,18 +12,6 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Handle Account Exists Error
-    @ExceptionHandler(AccountExistsException.class)
-    public ResponseEntity<Object> handleAccountExistsException(AccountExistsException ex) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.CONFLICT.value());
-        body.put("error", "Account Already Exists");
-        body.put("message", ex.getMessage());
-
-        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
-    }
-
     // Handle Register Account Error
     @ExceptionHandler(RegisterAccountException.class)
     public ResponseEntity<Object> handleRegisterAccountException(RegisterAccountException ex) {
