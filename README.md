@@ -34,18 +34,18 @@ mvn spring-boot:run
 - Creating or Registering new account
   - /accounts/register
   - (POST) Input:
-    - username (Mandatory)
-    - currency (Mandatory)
+    - username (Required)
+    - currency (Required)
     - balance (Optional)
 
 - Transfering funds from issuer account to recipient account
   - /transactions/transfer/funds
   - (POST) Input:
-    - issuerAccountId (Mandatory)
-    - recipientAccountId (Mandatory)
-    - amount (Mandatory)
+    - issuerAccountId (Required)
+    - recipientAccountId (Required)
+    - amount (Required)
 
 - Transaction history of an account
   - Input (POST):
-      - accountId (Mandatory)
+      - accountId (Required)
 
